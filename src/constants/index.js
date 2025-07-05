@@ -241,3 +241,5 @@ export const logFitnessProfileJsonToolDefinition = {
     ]
   }
 };
+
+export const sendInitAudioChunk = ''

@@ -10,7 +10,7 @@ import { log_fitness_profile_json } from '../../commonFunctions'
 
 // ⚡ Gemini SDK (default export is the hook)
 import useGeminiAgent from "gemini-ai-agent/react";
-import { logFitnessProfileJsonToolDefinition, systemPrompt } from "@/constants";
+import { logFitnessProfileJsonToolDefinition, sendInitAudioChunk, systemPrompt } from "@/constants";
 
 const GenerateProgramPage = () => {
   // UI State
@@ -32,6 +32,7 @@ const GenerateProgramPage = () => {
     apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
     systemInstructions: systemPrompt,
     voiceName: "Puck",
+    sendInitText:"Hello"
   });
 
 

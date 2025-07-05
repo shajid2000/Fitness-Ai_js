@@ -154,50 +154,113 @@ async function generateWorkoutPlan(userProfile) {
     generationConfig: GENERATION_CONFIG,
   });
 
-  const workoutPrompt = `You are an experienced fitness coach creating a personalized workout plan based on:
-Age: ${age}
-Height: ${height}
-Weight: ${weight}
-Injuries or limitations: ${injuries || 'None'}
-Available days for workout: ${workout_days}
-Fitness goal: ${fitness_goal}
-Fitness level: ${fitness_level}
+//   const workoutPrompt = `You are an experienced fitness coach creating a personalized workout plan based on:
+// Age: ${age}
+// Height: ${height}
+// Weight: ${weight}
+// Injuries or limitations: ${injuries || 'None'}
+// Available days for workout: ${workout_days}
+// Fitness goal: ${fitness_goal}
+// Fitness level: ${fitness_level}
 
-As a professional coach:
-- Consider muscle group splits to avoid overtraining the same muscles on consecutive days
-- Design exercises that match the fitness level and account for any injuries
-- Structure the workouts to specifically target the user's fitness goal
+// As a professional coach:
+// - Consider muscle group splits to avoid overtraining the same muscles on consecutive days
+// - Design exercises that match the fitness level and account for any injuries
+// - Structure the workouts to specifically target the user's fitness goal
 
-CRITICAL SCHEMA INSTRUCTIONS:
-- Your output MUST contain ONLY the fields specified below, NO ADDITIONAL FIELDS
-- "sets" and "reps" MUST ALWAYS be NUMBERS, never strings
-- For example: "sets": 3, "reps": 10
-- Do NOT use text like "reps": "As many as possible" or "reps": "To failure"
-- Instead use specific numbers like "reps": 12 or "reps": 15
-- For cardio, use "sets": 1, "reps": 1 or another appropriate number
-- NEVER include strings for numerical fields
-- NEVER add extra fields not shown in the example below
+// CRITICAL SCHEMA INSTRUCTIONS:
+// - Your output MUST contain ONLY the fields specified below, NO ADDITIONAL FIELDS
+// - "sets" and "reps" MUST ALWAYS be NUMBERS, never strings
+// - For example: "sets": 3, "reps": 10
+// - Do NOT use text like "reps": "As many as possible" or "reps": "To failure"
+// - Instead use specific numbers like "reps": 12 or "reps": 15
+// - For cardio, use "sets": 1, "reps": 1 or another appropriate number
+// - NEVER include strings for numerical fields
+// - NEVER add extra fields not shown in the example below
 
-Return a JSON object with this EXACT structure:
+// Return a JSON object with this EXACT structure:
+// {
+//   "schedule": ["Monday", "Wednesday", "Friday"],
+//   "exercises": [
+//     {
+//       "day": "Monday",
+//       "routines": [
+//         {
+//           "name": "Exercise Name",
+//           "sets": 3,
+//           "reps": 10
+//         }
+//       ]
+//     }
+//   ]
+// }
+
+// DO NOT add any fields that are not in this example. Your response must be a valid JSON object with no additional text.`;
+
+
+
+const workoutPrompt = `
+You are a certified strength-and-conditioning coach.  
+Create a personalised **weekly** training plan that meets the client profile and the constraints below.  
+**Return valid, minified JSON only – no extra text.**
+
+────────────────────────────────
+CLIENT PROFILE
+• Age: ${age}  
+• Height: ${height}  
+• Weight: ${weight}  
+• Fitness level: ${fitness_level}  
+• Goal: ${fitness_goal}  
+• Injuries/limitations: ${injuries || 'None'}  
+• Days available: ${workout_days}
+
+────────────────────────────────
+PLAN-DESIGN RULES
+1. Produce **exactly ${workout_days}** training days per week.  
+2. Avoid training the same primary muscle group on consecutive days; include progressive-overload cues for advanced clients.  
+3. All movements must suit a(n) ${fitness_level} athlete and respect any stated limitations.
+
+────────────────────────────────
+OUTPUT FORMAT (STRICT)
+• Top-level keys: **schedule**, **exercises** - nothing else.  
+• **schedule** - ordered list of weekday names for each training day.  
+• **exercises** - one object per schedule day, same order.  
+  ↳ Each object:  
+     "day": <weekday>,  
+     "routines": [ { "name": <string>, "sets": <int>, "reps": <int> } … ]
+
+NUMERIC RULES
+• sets / reps are integers only (e.g. "sets": 3, "reps": 10).  
+• For steady-state cardio use "sets": 1 and "reps": <minutes>.  
+• Never write “to failure”, “AMRAP”, ranges, or strings in sets/reps.
+
+────────────────────────────────
+VALIDATION TEMPLATE  
+Fill the template with **exactly ${workout_days}** entries.
+
 {
-  "schedule": ["Monday", "Wednesday", "Friday"],
+  "schedule": [${workout_days === 1 ? '"Monday"' :
+    workout_days === 2 ? '"Monday","Thursday"' :
+    workout_days === 3 ? '"Monday","Wednesday","Friday"' :
+    workout_days === 4 ? '"Monday","Tuesday","Thursday","Friday"' :
+    workout_days === 5 ? '"Monday","Tuesday","Wednesday","Thursday","Friday"' :
+    workout_days === 6 ? '"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"' :
+    '"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"'}],
   "exercises": [
     {
       "day": "Monday",
       "routines": [
-        {
-          "name": "Exercise Name",
-          "sets": 3,
-          "reps": 10
-        }
+        { "name": "Exercise Name", "sets": 3, "reps": 10 }
       ]
     }
+    // …add one object per remaining schedule day
   ]
 }
 
-DO NOT add any fields that are not in this example. Your response must be a valid JSON object with no additional text.`;
+⚠️ **Return only the JSON object - no commentary, markdown, or explanation.**
+`;
 
-  const result = await model.generateContent(workoutPrompt);
+const result = await model.generateContent(workoutPrompt);
   const planText = result.response.text();
   
   return JSON.parse(planText);
