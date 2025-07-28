@@ -1,12 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { log_fitness_profile_json } from '../../commonFunctions'
-
+import { PhoneIcon, PhoneOffIcon, ZapIcon, ActivityIcon, BrainIcon } from "lucide-react";
 
 // ⚡ Gemini SDK (default export is the hook)
 import useGeminiAgent from "gemini-ai-agent/react";
@@ -35,11 +34,9 @@ const GenerateProgramPage = () => {
     sendInitText:"Hello"
   });
 
-
-    useEffect(()=>{
-        localStorage.setItem('userid',user?.id)
+  useEffect(()=>{
+    localStorage.setItem('userid',user?.id)
   },[user?.id])
-
 
   useEffect(()=>{
     gemini.addTool(logFitnessProfileJsonToolDefinition,log_fitness_profile_json)
@@ -171,7 +168,6 @@ const GenerateProgramPage = () => {
     };
 
     // Note: This is a simplified event listener setup
-    // You may need to adjust based on the actual Gemini SDK API
     if (gemini.on) {
       gemini.on('message', handleMessage);
       gemini.on('audio_start', () => setIsSpeaking(true));
@@ -191,12 +187,8 @@ const GenerateProgramPage = () => {
 
   useEffect(() => {
     // Cleanup on unmount
-    console.log("befor return ");
-    
     return () => {
       try {
-        console.log("this is mee");
-        
         endGeminiCall();
       } catch (error) {
         console.warn("Error during cleanup:", error);
@@ -205,187 +197,286 @@ const GenerateProgramPage = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen text-foreground overflow-hidden pb-6 pt-24">
-      <div className="container mx-auto px-4 h-full max-w-5xl">
-        {/* Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold font-mono">
-            <span>Generate Your </span>
-            <span className="text-primary uppercase">Fitness Program</span>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+      
+      {/* Floating background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 -left-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-60 -right-40 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl animate-pulse" />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-6 py-20">
+        
+        {/* Title Section */}
+        <div className="text-center mb-16 space-y-6">
+          <div className="inline-flex items-center space-x-3 px-6 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl">
+            <BrainIcon className="w-6 h-6 text-purple-400" />
+            <span className="text-purple-300 font-medium">AI-Powered Fitness Coach</span>
+          </div>
+          
+          <h1 className="text-5xl lg:text-6xl font-black text-white leading-tight">
+            Generate Your{" "}
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Perfect Program
+            </span>
           </h1>
-          <p className="text-muted-foreground mt-2">
-            Have a voice conversation with our AI assistant to create your personalized plan
+          
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+            Have an intelligent voice conversation with our advanced AI fitness coach to create your personalized workout and nutrition plan
           </p>
         </div>
 
-        {/* VIDEO CALL AREA */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {/* Main Interface Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          
           {/* AI ASSISTANT CARD */}
-          <Card className="bg-card/90 backdrop-blur-sm border border-border overflow-hidden relative">
-            <div className="aspect-video flex flex-col items-center justify-center p-6 relative">
-              {/* AI VOICE ANIMATION */}
-              <div
-                className={`absolute inset-0 ${
-                  isSpeaking ? "opacity-30" : "opacity-0"
-                } transition-opacity duration-300`}
-              >
-                <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 flex justify-center items-center h-20">
-                  {[...Array(5)].map((_, i) => (
-                    <div
-                      key={i}
-                      className={`mx-1 h-16 w-1 bg-primary rounded-full ${
-                        isSpeaking ? "animate-sound-wave" : ""
-                      }`}
-                      style={{
-                        animationDelay: `${i * 0.1}s`,
-                        height: isSpeaking ? `${Math.random() * 50 + 20}%` : "5%",
-                      }}
-                    />
-                  ))}
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 relative overflow-hidden group hover:bg-white/10 transition-all duration-500">
+            
+            {/* Card glow effects */}
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-purple-500/20 rounded-full blur-2xl opacity-50" />
+            
+            <div className="relative flex flex-col items-center space-y-6">
+              
+              {/* AI Voice Visualization */}
+              <div className="relative">
+                {/* Outer pulse ring */}
+                <div className={`absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 ${isSpeaking ? 'animate-ping opacity-30' : 'opacity-0'} transition-opacity duration-300`} style={{ transform: 'scale(1.5)' }} />
+                
+                {/* Main avatar container */}
+                <div className="relative w-40 h-40 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-1 shadow-2xl shadow-purple-500/25">
+                  <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-b from-purple-500/20 to-pink-500/20" />
+                    <ZapIcon className="w-16 h-16 text-white relative z-10" />
+                  </div>
                 </div>
+                
+                {/* Voice wave animation */}
+                {isSpeaking && (
+                  <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-1">
+                    {[...Array(5)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-1 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full animate-pulse"
+                        style={{
+                          height: `${Math.random() * 20 + 10}px`,
+                          animationDelay: `${i * 0.1}s`,
+                          animationDuration: `${0.5 + Math.random() * 0.5}s`
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
 
-              {/* AI IMAGE */}
-              <div className="relative size-32 mb-4">
-                <div
-                  className={`absolute inset-0 bg-primary opacity-10 rounded-full blur-lg ${
-                    isSpeaking ? "animate-pulse" : ""
-                  }`}
-                />
-                <div className="relative w-full h-full rounded-full bg-card flex items-center justify-center border border-border overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-secondary/10"></div>
-                  <img
-                    src="/ai-avatar.png"
-                    alt="AI Assistant"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+              {/* AI Info */}
+              <div className="text-center space-y-2">
+                <h2 className="text-2xl font-bold text-white">FitAI Pro Coach  {isSpeaking && "speaking"}</h2>
+                <p className="text-purple-300 font-medium">Advanced Fitness & Nutrition AI</p>
               </div>
 
-              <h2 className="text-xl font-bold text-foreground">CodeFlex AI</h2>
-              <p className="text-sm text-muted-foreground mt-1">Fitness & Diet Coach</p>
-
-              {/* SPEAKING INDICATOR */}
-              <div
-                className={`mt-4 flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-border ${
-                  isSpeaking || typingIndicator ? "border-primary" : ""
-                }`}
-              >
-                <div
-                  className={`w-2 h-2 rounded-full ${
-                    isSpeaking || typingIndicator ? "bg-primary animate-pulse" : "bg-muted"
-                  }`}
-                />
-                <span className="text-xs text-muted-foreground">
+              {/* Status Indicator */}
+              <div className={`flex items-center space-x-3 px-4 py-2 rounded-xl border transition-all duration-300 ${
+                isSpeaking || typingIndicator 
+                  ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-purple-500/30' 
+                  : 'bg-white/5 border-white/10'
+              }`}>
+                <div className={`w-3 h-3 rounded-full ${
+                  isSpeaking 
+                    ? 'bg-green-400 animate-pulse shadow-lg shadow-green-400/50' 
+                    : typingIndicator
+                    ? 'bg-purple-400 animate-pulse shadow-lg shadow-purple-400/50'
+                    : callActive
+                    ? 'bg-blue-400 animate-pulse shadow-lg shadow-blue-400/50'
+                    : callEnded
+                    ? 'bg-pink-400 animate-pulse shadow-lg shadow-pink-400/50'
+                    : 'bg-gray-400'
+                }`} />
+                <span className="text-sm font-medium text-gray-300">
                   {isSpeaking
                     ? "Speaking..."
                     : typingIndicator
-                    ? "Thinking..."
+                    ? "Analyzing..."
                     : callActive
-                    ? "Listening..."
+                    ? "Listening actively..."
                     : callEnded
-                    ? "Redirecting to profile..."
-                    : "Waiting..."}
+                    ? "Program created! Redirecting..."
+                    : "Ready to help you"}
                 </span>
               </div>
             </div>
-          </Card>
+          </div>
 
           {/* USER CARD */}
-          <Card className="bg-card/90 backdrop-blur-sm border overflow-hidden relative">
-            <div className="aspect-video flex flex-col items-center justify-center p-6 relative">
-              <div className="relative size-32 mb-4">
-                <img
-                  src={user?.imageUrl}
-                  alt="User"
-                  className="size-full object-cover rounded-full"
-                />
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 relative overflow-hidden group hover:bg-white/10 transition-all duration-500">
+            
+            {/* Card glow effects */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute -top-20 -left-20 w-40 h-40 bg-blue-500/20 rounded-full blur-2xl opacity-50" />
+            
+            <div className="relative flex flex-col items-center space-y-6">
+              
+              {/* User Avatar */}
+              <div className="relative">
+                <div className="w-40 h-40 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 p-1 shadow-2xl shadow-blue-500/25">
+                  <div className="w-full h-full rounded-full overflow-hidden bg-slate-800">
+                    {user?.imageUrl ? (
+                      <img
+                        src={user.imageUrl}
+                        alt="User"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <ActivityIcon className="w-16 h-16 text-white" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Recording indicator */}
+                {isRecording && (
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center animate-pulse shadow-lg shadow-red-500/50">
+                    <div className="w-3 h-3 bg-white rounded-full" />
+                  </div>
+                )}
               </div>
-              <h2 className="text-xl font-bold text-foreground">You</h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                {user ? (user.firstName + " " + (user.lastName || "")).trim() : "Guest"}
-              </p>
-              <div className="mt-4 flex items-center gap-2 px-3 py-1 rounded-full bg-card border">
-                <div className={`w-2 h-2 rounded-full ${isRecording ? "bg-red-500 animate-pulse" : "bg-muted"}`} />
-                <span className="text-xs text-muted-foreground">
-                  {isRecording ? "Recording..." : "Ready"}
+
+              {/* User Info */}
+              <div className="text-center space-y-2">
+                <h2 className="text-2xl font-bold text-white">
+                  {user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Fitness Enthusiast' : 'Guest User'}
+                </h2>
+                <p className="text-blue-300 font-medium">Ready for Transformation</p>
+              </div>
+
+              {/* Recording Status */}
+              <div className={`flex items-center space-x-3 px-4 py-2 rounded-xl border transition-all duration-300 ${
+                isRecording 
+                  ? 'bg-gradient-to-r from-red-500/20 to-red-600/20 border-red-500/30' 
+                  : 'bg-white/5 border-white/10'
+              }`}>
+                <div className={`w-3 h-3 rounded-full ${
+                  isRecording ? 'bg-red-400 animate-pulse shadow-lg shadow-red-400/50' : 'bg-gray-400'
+                }`} />
+                <span className="text-sm font-medium text-gray-300">
+                  {isRecording ? "Recording your voice..." : "Ready to speak"}
                 </span>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
 
-        {/* MESSAGE CONTAINER */}
+        {/* Message Container */}
         {messages.length > 0 && (
-          <div
-            ref={messageContainerRef}
-            className="w-full bg-card/90 backdrop-blur-sm border border-border rounded-xl p-4 mb-8 h-64 overflow-y-auto transition-all duration-300 scroll-smooth"
-          >
-            <div className="space-y-3">
-              {messages.map((msg) => (
-                <div key={msg.id} className="message-item animate-fadeIn">
-                  <div className="font-semibold text-xs text-muted-foreground mb-1 flex items-center gap-2">
-                    {msg.role === "model" ? "CodeFlex AI" : "You"}
-                    {msg.hasAudio && <span className="text-primary">🔊</span>}
+          <div className="mb-12">
+            <div 
+              ref={messageContainerRef}
+              className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500/20 scrollbar-track-transparent"
+            >
+              <div className="space-y-4">
+                {messages.map((msg, index) => (
+                  <div 
+                    key={msg.id} 
+                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in-up`}
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
+                      msg.role === 'user' 
+                        ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white' 
+                        : 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white border border-purple-500/30'
+                    }`}>
+                      <div className="flex items-center space-x-2 mb-1">
+                        <span className="text-xs font-medium opacity-80">
+                          {msg.role === "model" ? "FitAI Pro" : "You"}
+                        </span>
+                        {msg.hasAudio && <span className="text-xs">🔊</span>}
+                      </div>
+                      <p className="text-sm leading-relaxed">{msg.content}</p>
+                    </div>
                   </div>
-                  <p className="text-foreground">{msg.content}</p>
-                </div>
-              ))}
+                ))}
 
-              {typingIndicator && (
-                <div className="message-item animate-fadeIn">
-                  <div className="font-semibold text-xs text-muted-foreground mb-1">CodeFlex AI:</div>
-                  <p className="text-foreground opacity-70">...</p>
-                </div>
-              )}
+                {typingIndicator && (
+                  <div className="flex justify-start animate-fade-in-up">
+                    <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 px-4 py-3 rounded-2xl">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs font-medium text-purple-300">FitAI Pro</span>
+                      </div>
+                      <div className="flex space-x-1 mt-2">
+                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" />
+                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}} />
+                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}} />
+                      </div>
+                    </div>
+                  </div>
+                )}
 
-              {callEnded && (
-                <div className="message-item animate-fadeIn">
-                  <div className="font-semibold text-xs text-primary mb-1">System:</div>
-                  <p className="text-foreground">
-                    Your fitness program has been created! Redirecting to your profile...
-                  </p>
-                </div>
-              )}
+                {callEnded && (
+                  <div className="flex justify-center animate-fade-in-up">
+                    <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 px-6 py-4 rounded-2xl text-center">
+                      <div className="flex items-center justify-center space-x-2 mb-2">
+                        <ZapIcon className="w-5 h-5 text-green-400" />
+                        <span className="text-sm font-medium text-green-300">System</span>
+                      </div>
+                      <p className="text-sm text-white">
+                        🎉 Your personalized fitness program has been generated! Redirecting to your profile...
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
 
-        {/* CALL CONTROLS */}
-        <div className="w-full flex justify-center gap-4">
+        {/* Call Controls */}
+        <div className="flex justify-center">
           <Button
-            className={`w-40 text-xl rounded-3xl ${
-              callActive
-                ? "bg-destructive hover:bg-destructive/90"
-                : callEnded
-                ? "bg-green-600 hover:bg-green-700"
-                : "bg-primary hover:bg-primary/90"
-            } text-white relative`}
             onClick={toggleCall}
             disabled={connecting || callEnded}
+            className={`relative px-12 py-6 text-lg font-bold rounded-3xl transition-all duration-300 hover:scale-105 shadow-2xl ${
+              callActive
+                ? "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-red-500/25"
+                : callEnded
+                ? "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 shadow-green-500/25"
+                : "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-purple-500/25"
+            } text-white border-0`}
           >
             {connecting && (
-              <span className="absolute inset-0 rounded-full animate-ping bg-primary/50 opacity-75"></span>
+              <div className="absolute inset-0 rounded-3xl animate-ping bg-gradient-to-r from-purple-500 to-pink-500 opacity-50" />
             )}
-            <span>
-              {callActive
-                ? "End Call"
-                : connecting
-                ? "Connecting..."
-                : callEnded
-                ? "View Profile"
-                : "Start Call"}
-            </span>
+            
+            <div className="relative flex items-center space-x-3">
+              {callActive ? (
+                <PhoneOffIcon className="w-6 h-6" />
+              ) : callEnded ? (
+                <ZapIcon className="w-6 h-6" />
+              ) : (
+                <PhoneIcon className="w-6 h-6" />
+              )}
+              
+              <span>
+                {callActive
+                  ? "End Session"
+                  : connecting
+                  ? "Connecting to AI..."
+                  : callEnded
+                  ? "View Your Program"
+                  : "Start AI Session"}
+              </span>
+            </div>
           </Button>
         </div>
 
         {/* Debug Text Input (for testing) */}
         {process.env.NODE_ENV === 'development' && callActive && (
-          <div className="mt-4 flex gap-2">
+          <div className="mt-8 max-w-md mx-auto">
             <input
               type="text"
               placeholder="Type a message (dev only)"
-              className="flex-1 p-2 border rounded"
+              className="w-full p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-500/50 transition-colors duration-300"
               onKeyPress={(e) => {
                 if (e.key === 'Enter') {
                   sendTextMessage(e.currentTarget.value);
@@ -396,6 +487,36 @@ const GenerateProgramPage = () => {
           </div>
         )}
       </div>
+
+      <style jsx>{`
+        .animate-fade-in-up {
+          animation: fadeInUp 0.5s ease-out forwards;
+        }
+        
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        .scrollbar-thumb-purple-500\/20::-webkit-scrollbar-thumb {
+          background-color: rgba(168, 85, 247, 0.2);
+          border-radius: 3px;
+        }
+        
+        .scrollbar-track-transparent::-webkit-scrollbar-track {
+          background: transparent;
+        }
+      `}</style>
     </div>
   );
 };
